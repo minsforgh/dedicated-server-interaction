@@ -1,0 +1,57 @@
+# 빌드 아티팩트
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+
+# 빌드 결과물 및 출력
+*.xcodeproj
+*.xcworkspace
+*.sln
+*.suo
+*.user
+*.userprefs
+*.db
+*.idea/
+.vscode/
+
+# 사용자별 설정
+.vscode/
+.idea/
+*.vsconfig
+*.vs/
+
+# 플러그인 임시 파일 및 빌드 결과물
+Plugins/*/Binaries/
+Plugins/*/Intermediate/
+
+# 프로젝트에서 사용하는 임시 및 캐시 파일들
+.DS_Store
+Thumbs.db
+
+# IntelliJ, Visual Studio, XCode 등 IDE 관련 파일들
+*.iml
+*.iws
+.idea/
+
+# 언리얼 엔진의 Generated 파일
+Generated/
+
+# 파라미터화된 빌드 설정
+Build/
+
+# 에셋 캐시 파일
+*.ubt
+
+# Android 관련 빌드 출력
+*.apk
+*.obb
+*.keystore
+
+# iOS 관련 빌드 출력
+*.app
+*.ipa
+*.mobileprovision
+*.p12
+*.xcodeproj
+*.xcuserstate
