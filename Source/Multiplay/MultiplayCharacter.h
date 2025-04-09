@@ -11,7 +11,9 @@ class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
+class UPlayerChatComponent;
 struct FInputActionValue;
+
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
@@ -49,7 +51,9 @@ class AMultiplayCharacter : public ACharacter
 
 public:
 	AMultiplayCharacter();
-	
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Chat, meta = (AllowPrivateAccess = "true"))
+	UPlayerChatComponent* ChatComponent;
 
 protected:
 
