@@ -35,6 +35,8 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Inventory")
     bool OnInventorySlotSwap(UInventorySlotWidget* TargetSlot, int32 SourceSlotIndex);
 
+
+
 protected:
     virtual void NativeConstruct() override;
 

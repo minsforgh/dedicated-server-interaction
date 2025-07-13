@@ -34,15 +34,30 @@ void UInventoryComponent::ServerRemoveItem_Implementation(const FItemData& ItemD
 }
 
 void UInventoryComponent::ServerSwapItems_Implementation(int32 SourceIndex, int32 TargetIndex)
-{
+{   
+
     // 서버에서만 실행
     if (!GetOwner()->HasAuthority())
         return;
 
+    // ✅ 이 로그는 서버에서 출력됨 (보임!)
+    UE_LOG(LogTemp, Error, TEXT("🔥🔥🔥 SERVER SWAP ITEMS CALLED! Source=%d, Target=%d 🔥🔥🔥"),
+        SourceIndex, TargetIndex);
+
+    if (GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red,
+            FString::Printf(TEXT("🔥 SERVER: SwapItems %d->%d"), SourceIndex, TargetIndex));
+    }
+
     // 범위 체크
     if (SourceIndex < 0 || SourceIndex >= Inventory.Num() ||
         TargetIndex < 0 || TargetIndex >= Inventory.Num())
+    {
+        UE_LOG(LogTemp, Error, TEXT("❌ INVALID INDICES! Source=%d, Target=%d, Inventory.Num()=%d"),
+            SourceIndex, TargetIndex, Inventory.Num());
         return;
+    }
 
     // 슬롯 교환
     FItemData TempItem = Inventory[SourceIndex];
@@ -51,5 +66,7 @@ void UInventoryComponent::ServerSwapItems_Implementation(int32 SourceIndex, int3
 
     // 인벤토리 변경 이벤트 호출
     OnInventoryChanged.Broadcast();
+
+    UE_LOG(LogTemp, Warning, TEXT("✅ SWAP COMPLETED SUCCESSFULLY"));
 }
 
