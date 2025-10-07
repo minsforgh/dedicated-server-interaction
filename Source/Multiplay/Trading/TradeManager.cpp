@@ -7,17 +7,17 @@
 #include "TradeWidget.h"
 
 ATradeManager::ATradeManager()
-{	
+{
 	PrimaryActorTick.bCanEverTick = false;
 
-	//Replicate ¼³Á¤À§ÇØ¼­´Â RootComponent°¡ Á¸ÀçÇØ¾ßÇÔ
+	//Replicate ì„¸íŒ…í•´ì£¼ë ¤ë©´ RootComponentê°€ í•„ìš”í•´ì•¼í•¨
 	USceneComponent* SceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("TradeManagerRoot"));
 	RootComponent = SceneComp;
-	
-	// º¹Á¦ ¼³Á¤ (SetReplicates()´Â ¿ÏÀüÈ÷ ÃÊ±âÈ­ µÈ ÈÄ¿¡ È£ÃâÇÏ´Â°Ô ¾ÈÀü, »ıÁ¤ÀÚ ´Ü°è¿¡¼­´Â bReplicates »ç¿ë)
+
+	// ë³µì œ ì„¤ì • (SetReplicates()ëŠ” ìƒì„±ì ì´ˆê¸°í™” í›„ ë‚˜ì¤‘ì— í˜¸ì¶œí•˜ëŠ”ê²Œ ì¼ë°˜, ìƒì„±ì ë‹¨ê³„ì—ì„œë§Œ bReplicates ì„¤ì •)
 	bReplicates = true;
 
-	// ±âº» ±³È¯ »óÅÂ ÃÊ±âÈ­
+	// ê¸°ë³¸ êµí™˜ ìƒíƒœ ì´ˆê¸°í™”
 	TradeState = FTradeState();
 }
 
@@ -31,14 +31,14 @@ void ATradeManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 }
 
 void ATradeManager::Initialize(AMultiplayCharacter* A, AMultiplayCharacter* B)
-{	
+{
 	PlayerA = A;
 	PlayerB = B;
 
-	// ±³È¯ »óÅÂ ÃÊ±âÈ­
+	// êµí™˜ ìƒíƒœ ì´ˆê¸°í™”
 	TradeState = FTradeState();
 
-	// ÃÊ±â »óÅÂ ¾÷µ¥ÀÌÆ®
+	// ì´ˆê¸° ìƒíƒœ ë¸Œë¡œë“œìºìŠ¤íŠ¸
 	MulticastUpdateTradeState(TradeState);
 }
 
@@ -48,20 +48,20 @@ bool ATradeManager::HasTradeSession(AMultiplayCharacter* A, AMultiplayCharacter*
         (PlayerA == B && PlayerB == A);
 }
 
-// ±³È¯ ½½·Ô¿¡ ¾ÆÀÌÅÛ Ãß°¡
+// êµí™˜ ì°½ì— ì•„ì´í…œ ì¶”ê°€
 void ATradeManager::AddItemToTradeSlot(AMultiplayCharacter* RequestingPlayer, int32 InventoryIndex, int32 TradeSlotIndex)
 {
     if (!HasAuthority())
     {
         return;
     }
-    
+
     if (!RequestingPlayer || TradeSlotIndex < 0 || TradeSlotIndex >= 3)
     {
         return;
     }
-        
-    // ¾î´À ÇÃ·¹ÀÌ¾î°¡ ¿äÃ»Çß´ÂÁö È®ÀÎ
+
+    // ì–´ë–¤ í”Œë ˆì´ì–´ê°€ ìš”ì²­í–ˆëŠ”ì§€ í™•ì¸
     bool bIsPlayerA = (RequestingPlayer == PlayerA);
     AMultiplayCharacter* Player = bIsPlayerA ? PlayerA : PlayerB;
 
@@ -75,44 +75,44 @@ void ATradeManager::AddItemToTradeSlot(AMultiplayCharacter* RequestingPlayer, in
         return;
     }
 
-    // ÀÎº¥Åä¸® ÄÄÆ÷³ÍÆ®¿¡¼­ ¾ÆÀÌÅÛ °¡Á®¿À±â
+    // ì¸ë²¤í† ë¦¬ ì»´í¬ë„ŒíŠ¸ì—ì„œ ì•„ì´í…œ ê°€ì ¸ì˜¤ê¸°
     UInventoryComponent* Inventory = PlayerController->FindComponentByClass<UInventoryComponent>();
     if (!Inventory)
     {
         return;
     }
-     
+
     TArray<FItemData> Items = Inventory->Inventory;
     if (!Items.IsValidIndex(InventoryIndex))
     {
         return;
     }
-       
+
     FItemData Item = Items[InventoryIndex];
 
-    // ±³È¯ »óÅÂ ¾÷µ¥ÀÌÆ®
+    // êµí™˜ ìƒíƒœ ì—…ë°ì´íŠ¸
     if (bIsPlayerA)
-    {   
+    {
 
         TradeState.PlayerAItems[TradeSlotIndex] = Item;
     }
     else
-    {   
+    {
         TradeState.PlayerBItems[TradeSlotIndex] = Item;
     }
 
-    //ÀÎº¥Åä¸®¿¡¼­ item Á¦°Å
+    //ì¸ë²¤í† ë¦¬ì—ì„œ item ì œê±°
     Inventory->ServerRemoveItem(Item);
 
-    // È®ÀÎ »óÅÂ ¸®¼Â
+    // í™•ì¸ ìƒíƒœ í•´ì œ
     TradeState.bPlayerAConfirmed = false;
     TradeState.bPlayerBConfirmed = false;
 
-    // ¾çÂÊ Å¬¶óÀÌ¾ğÆ®¿¡ ±³È¯ »óÅÂ ¾÷µ¥ÀÌÆ®
+    // ëª¨ë“  í´ë¼ì´ì–¸íŠ¸ì— êµí™˜ ìƒíƒœ ë¸Œë¡œë“œìºìŠ¤íŠ¸
     MulticastUpdateTradeState(TradeState);
 }
 
-// ±³È¯ ½½·Ô¿¡¼­ ¾ÆÀÌÅÛ Á¦°Å
+// êµí™˜ ì°½ì—ì„œ ì•„ì´í…œ ì œê±°
 void ATradeManager::RemoveItemFromTradeSlot(AMultiplayCharacter* RequestingPlayer, int32 TradeSlotIndex)
 {
     if (!HasAuthority())
@@ -129,14 +129,14 @@ void ATradeManager::RemoveItemFromTradeSlot(AMultiplayCharacter* RequestingPlaye
         return;
     }
 
-    // ÄÁÆ®·Ñ·¯¿¡¼­ ÀÎº¥Åä¸® ÄÄÆ÷³ÍÆ® Ã£±â
+    // ì»¨íŠ¸ë¡¤ëŸ¬ì—ì„œ ì¸ë²¤í† ë¦¬ ì»´í¬ë„ŒíŠ¸ ì°¾ê¸°
     UInventoryComponent* Inventory = PlayerController->FindComponentByClass<UInventoryComponent>();
     if (!Inventory)
     {
         return;
     }
 
-    // ¾ÆÀÌÅÛÀ» ÀÎº¥Åä¸®·Î ¹İÈ¯
+    // ì•„ì´í…œì„ ì¸ë²¤í† ë¦¬ë¡œ ë°˜í™˜
     FItemData ItemToReturn;
     if (bIsPlayerA)
     {
@@ -146,7 +146,7 @@ void ATradeManager::RemoveItemFromTradeSlot(AMultiplayCharacter* RequestingPlaye
             Inventory->ServerAddItem(ItemToReturn);
         }
 
-        // ±³È¯ »óÅÂ ¾÷µ¥ÀÌÆ®
+        // êµí™˜ ìƒíƒœ ì—…ë°ì´íŠ¸
         TradeState.PlayerAItems[TradeSlotIndex] = FItemData();
     }
     else
@@ -156,21 +156,21 @@ void ATradeManager::RemoveItemFromTradeSlot(AMultiplayCharacter* RequestingPlaye
         {
             Inventory->ServerAddItem(ItemToReturn);
         }
-        // ±³È¯ »óÅÂ ¾÷µ¥ÀÌÆ®
+        // êµí™˜ ìƒíƒœ ì—…ë°ì´íŠ¸
         TradeState.PlayerBItems[TradeSlotIndex] = FItemData();
     }
 
-    // È®ÀÎ »óÅÂ ¸®¼Â
+    // í™•ì¸ ìƒíƒœ í•´ì œ
     TradeState.bPlayerAConfirmed = false;
     TradeState.bPlayerBConfirmed = false;
 
-    // ¾çÂÊ Å¬¶óÀÌ¾ğÆ®¿¡ ±³È¯ »óÅÂ ¾÷µ¥ÀÌÆ®
+    // ëª¨ë“  í´ë¼ì´ì–¸íŠ¸ì— êµí™˜ ìƒíƒœ ë¸Œë¡œë“œìºìŠ¤íŠ¸
     MulticastUpdateTradeState(TradeState);
 }
 
-// ±³È¯ ½½·Ô°£ ¾ÆÀÌÅÛ ±³È¯
+// êµí™˜ ì°½ê³¼ êµí™˜ì°½ êµí™˜
 void ATradeManager::SwapTradeSlots(AMultiplayCharacter* RequestingPlayer, int32 SourceSlotIndex, int32 TargetSlotIndex)
-{ 
+{
     if (!HasAuthority())
         return;
 
@@ -179,34 +179,34 @@ void ATradeManager::SwapTradeSlots(AMultiplayCharacter* RequestingPlayer, int32 
         TargetSlotIndex < 0 || TargetSlotIndex >= 3)
         return;
 
-    // ¾î´À ÇÃ·¹ÀÌ¾î°¡ ¿äÃ»Çß´ÂÁö È®ÀÎ
+    // ì–´ë–¤ í”Œë ˆì´ì–´ê°€ ìš”ì²­í–ˆëŠ”ì§€ í™•ì¸
     bool bIsPlayerA = (RequestingPlayer == PlayerA);
 
-    // ±³È¯ »óÅÂ ¾÷µ¥ÀÌÆ®
+    // êµí™˜ ìƒíƒœ ì—…ë°ì´íŠ¸
     if (bIsPlayerA)
     {
-        // ÇÃ·¹ÀÌ¾î AÀÇ ½½·Ô ±³È¯
+        // í”Œë ˆì´ì–´ Aì˜ ìŠ¬ë¡¯ êµí™˜
         FItemData TempItem = TradeState.PlayerAItems[SourceSlotIndex];
         TradeState.PlayerAItems[SourceSlotIndex] = TradeState.PlayerAItems[TargetSlotIndex];
         TradeState.PlayerAItems[TargetSlotIndex] = TempItem;
     }
     else
     {
-        // ÇÃ·¹ÀÌ¾î BÀÇ ½½·Ô ±³È¯
+        // í”Œë ˆì´ì–´ Bì˜ ìŠ¬ë¡¯ êµí™˜
         FItemData TempItem = TradeState.PlayerBItems[SourceSlotIndex];
         TradeState.PlayerBItems[SourceSlotIndex] = TradeState.PlayerBItems[TargetSlotIndex];
         TradeState.PlayerBItems[TargetSlotIndex] = TempItem;
     }
 
-    // È®ÀÎ »óÅÂ ¸®¼Â
+    // í™•ì¸ ìƒíƒœ í•´ì œ
     TradeState.bPlayerAConfirmed = false;
     TradeState.bPlayerBConfirmed = false;
 
-    // ¾çÂÊ Å¬¶óÀÌ¾ğÆ®¿¡ ±³È¯ »óÅÂ ¾÷µ¥ÀÌÆ®
+    // ëª¨ë“  í´ë¼ì´ì–¸íŠ¸ì— êµí™˜ ìƒíƒœ ë¸Œë¡œë“œìºìŠ¤íŠ¸
     MulticastUpdateTradeState(TradeState);
 }
 
-// ±³È¯ ½ÂÀÎ È®ÀÎ
+// êµí™˜ ìƒíƒœ í™•ì¸
 void ATradeManager::SetTradeConfirmation(AMultiplayCharacter* RequestingPlayer, bool bIsConfirmed)
 {
     if (!HasAuthority())
@@ -215,10 +215,10 @@ void ATradeManager::SetTradeConfirmation(AMultiplayCharacter* RequestingPlayer, 
     if (!RequestingPlayer)
         return;
 
-    // ¾î´À ÇÃ·¹ÀÌ¾î°¡ ¿äÃ»Çß´ÂÁö È®ÀÎ
+    // ì–´ë–¤ í”Œë ˆì´ì–´ê°€ ìš”ì²­í–ˆëŠ”ì§€ í™•ì¸
     bool bIsPlayerA = (RequestingPlayer == PlayerA);
 
-    // ±³È¯ »óÅÂ ¾÷µ¥ÀÌÆ®
+    // êµí™˜ ìƒíƒœ ì—…ë°ì´íŠ¸
     if (bIsPlayerA)
     {
         TradeState.bPlayerAConfirmed = bIsConfirmed;
@@ -228,36 +228,30 @@ void ATradeManager::SetTradeConfirmation(AMultiplayCharacter* RequestingPlayer, 
         TradeState.bPlayerBConfirmed = bIsConfirmed;
     }
 
-    // ¾çÂÊ Å¬¶óÀÌ¾ğÆ®¿¡ ±³È¯ »óÅÂ ¾÷µ¥ÀÌÆ®
+    // ëª¨ë“  í´ë¼ì´ì–¸íŠ¸ì— êµí™˜ ìƒíƒœ ë¸Œë¡œë“œìºìŠ¤íŠ¸
     MulticastUpdateTradeState(TradeState);
 
-    // ¾çÂÊÀÌ ¸ğµÎ È®ÀÎÇÑ °æ¿ì ±³È¯ ½ÇÇà
+    // ëª¨ë‘ê°€ ëª¨ë‘ í™•ì¸í•œ ê²½ìš° êµí™˜ ì‹¤í–‰
     if (TradeState.bPlayerAConfirmed && TradeState.bPlayerBConfirmed)
     {
         ExecuteTrade();
     }
 }
 
-// ±³È¯ ½ÇÇà
+// ê±°ë˜ ì‹¤í–‰
 void ATradeManager::ExecuteTrade()
 {
-    if (!HasAuthority())
-    {
-        return;
-    }
+    if (!HasAuthority()) return;
+    if (!TradeState.bPlayerAConfirmed || !TradeState.bPlayerBConfirmed) return;
 
-    // ¾çÂÊ ÇÃ·¹ÀÌ¾î°¡ ¸ğµÎ È®ÀÎÇß´ÂÁö Ã¼Å©
-    if (!TradeState.bPlayerAConfirmed || !TradeState.bPlayerBConfirmed)
-    {
-        return;
-    }
-
-    // ÇÃ·¹ÀÌ¾î A¿Í BÀÇ ÄÁÆ®·Ñ·¯ ¹× ÀÎº¥Åä¸® ÄÄÆ÷³ÍÆ®
     AController* ControllerA = PlayerA ? PlayerA->GetController() : nullptr;
     AController* ControllerB = PlayerB ? PlayerB->GetController() : nullptr;
 
+    // [ERROR] ì—°ê²° ëŠê¹€ ì²´í¬
     if (!ControllerA || !ControllerB)
     {
+        UE_LOG(LogTemp, Error, TEXT("[ERROR] Player disconnected during trade"));
+        CancelTrade();
         return;
     }
 
@@ -266,27 +260,50 @@ void ATradeManager::ExecuteTrade()
 
     if (!InventoryA || !InventoryB)
     {
+        UE_LOG(LogTemp, Error, TEXT("[ERROR] Inventory component missing"));
+        CancelTrade();
         return;
     }
 
-    // °¢ ½½·ÔÀÇ ¾ÆÀÌÅÛ ±³È¯
+    // [ERROR] ì¸ë²¤í† ë¦¬ ê³µê°„ ì²´í¬
+    int32 RequiredSlotsA = 0;
+    int32 RequiredSlotsB = 0;
+
     for (int32 i = 0; i < 3; i++)
     {
-        // A -> B ±³È¯
+        if (TradeState.PlayerBItems[i].ItemID != -1) RequiredSlotsA++;
+        if (TradeState.PlayerAItems[i].ItemID != -1) RequiredSlotsB++;
+    }
+
+    if (InventoryA->Inventory.Num() + RequiredSlotsA > 20)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("[ERROR] PlayerA inventory full"));
+        CancelTrade();
+        return;
+    }
+
+    if (InventoryB->Inventory.Num() + RequiredSlotsB > 20)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("[ERROR] PlayerB inventory full"));
+        CancelTrade();
+        return;
+    }
+
+    // ê±°ë˜ ì‹¤í–‰ (ì´ì œ ì•ˆì „í•¨)
+    for (int32 i = 0; i < 3; i++)
+    {
         if (TradeState.PlayerAItems[i].ItemID != -1)
-        {   
-            //ÀÌ¹Ì ±³È¯ ½½·Ô¿¡ ¾ÆÀÌÅÛ Ãß°¡ÇÒ ¶§ ÀÎº¥Åä¸®¿¡¼­´Â Á¦°ÅÇÔ
+        {
             InventoryB->ServerAddItem(TradeState.PlayerAItems[i]);
         }
 
-        // B -> A ±³È¯
         if (TradeState.PlayerBItems[i].ItemID != -1)
         {
             InventoryA->ServerAddItem(TradeState.PlayerBItems[i]);
         }
     }
 
-    // ±³È¯ Á¾·á ¹× UI ´İ±â
+    // UI ë‹«ê¸°
     if (PlayerA && PlayerA->TradeComponent)
     {
         PlayerA->TradeComponent->ClientCloseTradeUI();
@@ -301,17 +318,16 @@ void ATradeManager::ExecuteTrade()
         PlayerB->TradeComponent->CurrentTradePartner = nullptr;
     }
 
-    // TradeManager ÆÄ±«
     Destroy();
 }
 
-// ±³È¯ Ãë¼Ò
+// êµí™˜ ì·¨ì†Œ
 void ATradeManager::CancelTrade()
-{   
+{
     if (!HasAuthority())
         return;
 
-    // ÇÃ·¹ÀÌ¾î A¿Í BÀÇ ÄÁÆ®·Ñ·¯ ¹× ÀÎº¥Åä¸® ÄÄÆ÷³ÍÆ®
+    // í”Œë ˆì´ì–´ Aì™€ Bì˜ ì»¨íŠ¸ë¡¤ëŸ¬ ë° ì¸ë²¤í† ë¦¬ ì»´í¬ë„ŒíŠ¸
     AController* ControllerA = PlayerA ? PlayerA->GetController() : nullptr;
     AController* ControllerB = PlayerB ? PlayerB->GetController() : nullptr;
 
@@ -322,16 +338,16 @@ void ATradeManager::CancelTrade()
 
         if (InventoryA && InventoryB)
         {
-            // °¢ ÇÃ·¹ÀÌ¾îÀÇ °Å·¡ ½½·Ô¿¡ ÀÖ´Â ¾ÆÀÌÅÛÀ» ¿ø·¡ ÁÖÀÎ¿¡°Ô ¹İÈ¯
+            // ê° í”Œë ˆì´ì–´ì˜ ê±°ë˜ ì°½ì— ìˆëŠ” ì•„ì´í…œë“¤ì„ ì›ë˜ ì¸ë²¤í† ë¦¬ë¡œ ë°˜í™˜
             for (int32 i = 0; i < 3; i++)
             {
-                // ÇÃ·¹ÀÌ¾î AÀÇ ¾ÆÀÌÅÛ ¹İÈ¯
+                // í”Œë ˆì´ì–´ Aì˜ ì•„ì´í…œ ë°˜í™˜
                 if (TradeState.PlayerAItems[i].ItemID != -1)
                 {
                     InventoryA->ServerAddItem(TradeState.PlayerAItems[i]);
                 }
 
-                // ÇÃ·¹ÀÌ¾î BÀÇ ¾ÆÀÌÅÛ ¹İÈ¯
+                // í”Œë ˆì´ì–´ Bì˜ ì•„ì´í…œ ë°˜í™˜
                 if (TradeState.PlayerBItems[i].ItemID != -1)
                 {
                     InventoryB->ServerAddItem(TradeState.PlayerBItems[i]);
@@ -339,8 +355,8 @@ void ATradeManager::CancelTrade()
             }
         }
     }
- 
-    // ±³È¯ Á¾·á ¹× UI ´İ±â
+
+    // êµí™˜ ì™„ë£Œ í›„ UI ë‹«ê¸°
     if (PlayerA && PlayerA->TradeComponent)
     {
         PlayerA->TradeComponent->ClientCloseTradeUI();
@@ -355,16 +371,16 @@ void ATradeManager::CancelTrade()
         PlayerB->TradeComponent->CurrentTradePartner = nullptr;
     }
 
-    // TradeManager ÆÄ±«
+    // TradeManager íŒŒê´´
     Destroy();
 }
 
 void ATradeManager::MulticastUpdateTradeState_Implementation(const FTradeState& NewState)
 {
-    // TradeState ¾÷µ¥ÀÌÆ®
+    // TradeState ì—…ë°ì´íŠ¸
     TradeState = NewState;
 
-    // UI ¾÷µ¥ÀÌÆ®°¡ ÇÊ¿äÇÏ´Ù¸é TradeWidget Ã£¾Æ¼­ UpdateTradeState È£Ãâ
+    // UI ì—…ë°ì´íŠ¸ê°€ í•„ìš”í•˜ë‹¤ë©´ TradeWidget ì°¾ì•„ì„œ UpdateTradeState í˜¸ì¶œ
     APawn* LocalPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
     AMultiplayCharacter* LocalCharacter = Cast<AMultiplayCharacter>(LocalPawn);
 

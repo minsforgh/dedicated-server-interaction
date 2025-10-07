@@ -16,35 +16,35 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	// ÀÎº¥Åä¸® ¹è¿­
+	// ï¿½Îºï¿½ï¿½ä¸® ï¿½è¿­
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing=OnRep_Inventory, Category = "Inventory")
 	TArray<FItemData> Inventory;
 	
-	//ÀÎº¥Åä¸® ¹è¿­ º¹Á¦ À§ÇÑ ´õ¹Ì º¯¼ö
+	//ï¿½Îºï¿½ï¿½ä¸® ï¿½è¿­ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	UPROPERTY(Replicated)
 	int32 InventoryReplicationCounter;
 
-	//¼ÒÁö±Ý
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Inventory")
 	int32 CurrentMoney;
 
-	// ¾ÆÀÌÅÛ Ãß°¡ ÇÔ¼ö
-	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Inventory")
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ ï¿½Ô¼ï¿½
+	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable, Category = "Inventory")
 	void ServerAddItem(const FItemData& ItemData);
 
-	// ¾ÆÀÌÅÛ Á¦°Å ÇÔ¼ö
-	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Inventory")
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
+	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable, Category = "Inventory")
 	void ServerRemoveItem(const FItemData& ItemData);
 	
-	//ÀÎº¥Åä¸® º¯°æ ½Ã È£Ãâ
+	//ï¿½Îºï¿½ï¿½ä¸® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ È£ï¿½ï¿½
 	UFUNCTION()
 	void OnRep_Inventory();
 
-	// ¾ÆÀÌÅÛ ±³Ã¼
-	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Inventory")
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼
+	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable, Category = "Inventory")
 	void ServerSwapItems(int32 SourceIndex, int32 TargetIndex);
 
-	// ÀÎº¥Åä¸® º¯°æ ÀÌº¥Æ®
+	// ï¿½Îºï¿½ï¿½ä¸® ï¿½ï¿½ï¿½ï¿½ ï¿½Ìºï¿½Æ®
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")
 	FOnInventoryChanged OnInventoryChanged;
 

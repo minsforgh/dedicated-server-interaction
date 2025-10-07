@@ -5,7 +5,7 @@
 #include "Delegates/Delegate.h"
 #include "InventoryTypes.generated.h"
 
-//¾ÆÀÌÅÛ µ¥ÀÌÅÍ Å¸ÀÔ Á¤ÀÇ
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 USTRUCT(BlueprintType)
 struct MULTIPLAY_API FItemData
 {	
@@ -27,7 +27,7 @@ struct MULTIPLAY_API FItemData
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	UTexture2D* ItemIcon;
 
-    //ºñ±³ ¿¬»êÀÚ
+    //ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     bool operator==(const FItemData& Other) const
     {
         return ItemID == Other.ItemID;
@@ -38,11 +38,11 @@ struct MULTIPLAY_API FItemData
         return !(*this == Other);
     }
 
-    bool IsValid()
+    bool IsValid() const
     {
         return ItemID != -1;
     }
 };
 
-// ÀÌº¥Æ® µ¨¸®°ÔÀÌÆ® ¼±¾ð (ÀÎº¥Åä¸® º¯È­)
+// ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ (ï¿½Îºï¿½ï¿½ä¸® ï¿½ï¿½È­)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryChanged);

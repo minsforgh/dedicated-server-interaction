@@ -21,14 +21,14 @@ void UPlayerChatComponent::EnableInput()
 		return;
 	}
 
-	// Ã¤ÆÃÃ¢ È°¼ºÈ­
+	// Ã¤ï¿½ï¿½Ã¢ È°ï¿½ï¿½È­
 	ChatInputText->SetVisibility(ESlateVisibility::Visible);
 
-	// °ÔÀÓ ÀÔ·ÂÀ» UI·Î ÀüÈ¯
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ï¿½ï¿½ UIï¿½ï¿½ ï¿½ï¿½È¯
 	OnInputEnabled.Broadcast();
 }
 
-// Server¿¡¼­ °¢ Client¿¡ Client RPC (ReceiveMessage)
+// Serverï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Clientï¿½ï¿½ Client RPC (ReceiveMessage)
 void UPlayerChatComponent::ServerSendMessage_Implementation(const FString& Message)
 {	
 	if (Message.IsEmpty()) return;
@@ -62,10 +62,12 @@ void UPlayerChatComponent::ServerSendMessage_Implementation(const FString& Messa
 
 bool UPlayerChatComponent::ServerSendMessage_Validate(const FString& Message)
 {
+	if (Message.IsEmpty()) return false;
+	if (Message.Len() > 200) return false;  // ë©”ì‹œì§€ ê¸¸ì´ ì œí•œ
 	return true;
 }
 
-//Client¿¡¼­ Message Ã³¸®
+//Clientï¿½ï¿½ï¿½ï¿½ Message Ã³ï¿½ï¿½
 void UPlayerChatComponent::ClientReceiveMessage_Implementation(const FString& SenderName, const FString& Message)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Client Received  %s: %s"), *SenderName, *Message);
