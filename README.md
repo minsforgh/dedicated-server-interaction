@@ -119,7 +119,7 @@ bool ServerAddItem_Validate(const FItemData& ItemData)
 <!-- 📸 채팅 UI 스크린샷 -->
 ![채팅 시스템](docs/images/chat.png)
 
-Server → Multicast 브로드캐스트
+Server → Client (순회)
 
 - **메시지 검증**: 빈 메시지, 200자 초과 차단
 - **송신자 표시**: 각 메시지에 플레이어 이름
